@@ -18,6 +18,8 @@ M.night_colorschemes = {
     "everforest-soft",
     "bamboo",
     "kanagawa-dragon",
+    'OceanicNext',
+    'nord'
 }
 
 M.special_colorschemes = {
@@ -83,6 +85,16 @@ return {
         lazy = false,
         priority = 1000,
         opts = {},
+    },
+    {
+        "shaunsingh/nord.nvim",
+        lazy = false,
+        priority = 1000,
+    },
+    {
+        "mhartington/oceanic-next",
+        lazy = false,
+        priority = 1000,
     },
     {
         "ribru17/bamboo.nvim",
