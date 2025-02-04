@@ -1,11 +1,11 @@
 local M = {}
 local time_utils = require("util.time")
+local environment_utils = require("util.environments")
 local colorscheme_priority = 1000
 local colorscheme_change_seconds = 1000 * 60 * 60; -- milliseconds * seconds * minutes
 math.randomseed(os.time())                         -- seed randomness
 
 M.day_colorschemes = {
-    "bamboo",
     "everforest-hard",
     "everforest-soft",
     "kanagawa-lotus",
@@ -19,7 +19,8 @@ M.night_colorschemes = {
     "bamboo",
     "kanagawa-dragon",
     'OceanicNext',
-    'nord'
+    'nord',
+    'miasma'
 }
 
 M.special_colorschemes = {
@@ -48,6 +49,10 @@ M.set_colorscheme = function()
             vim.g.everforest_background = "soft"
         end
         selected_colorcheme = "everforest" --apply base
+    end
+
+    if environment_utils.is_windows() then -- like using a default at work
+        selected_colorcheme = "onedark"
     end
 
     vim.cmd("colorscheme " .. selected_colorcheme)
@@ -97,6 +102,17 @@ return {
         priority = 1000,
     },
     {
+        "navarasu/onedark.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require('onedark').setup {
+                style = "darker",
+                transparent = false,
+            }
+        end
+    },
+    {
         "ribru17/bamboo.nvim",
         lazy = false,
         priority = colorscheme_priority,
@@ -111,6 +127,11 @@ return {
         config = function()
             vim.g.everforest_enable_italic = false
         end,
+    },
+    {
+        "xero/miasma.nvim",
+        lazy = false,
+        priority = 1000,
     },
     {
         "rebelot/kanagawa.nvim",
