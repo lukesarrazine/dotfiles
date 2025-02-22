@@ -89,7 +89,7 @@ function M.setup_razor()
 end
 
 return {
-    'seblj/roslyn.nvim',
+    "seblyng/roslyn.nvim",
     dependencies = {
         {
             -- By loading as a dependencies, we ensure that we are available to set
@@ -114,3 +114,4 @@ return {
         end
     end
 }
+
