@@ -11,6 +11,7 @@ return {
         local conf = require("telescope.config")
         local builtin = require("telescope.builtin")
         local harpoon = require("harpoon")
+        local marked_icon = "⭐"
 
         telescope.setup({
             defaults = {
@@ -46,10 +47,11 @@ return {
                 end
 
                 return require("telescope.finders").new_table({
-                    results = vim.fn.systemlist("rg --files"), --use ripgrep
+                    --use ripgrep
+                    results = vim.fn.systemlist("rg --files"),
                     entry_maker = function(entry)
-                        local filename = vim.fn.fnamemodify(entry, ":p") -- Get absolute path
-                        local icon = harpoon_set[entry] and "⭐ " or "  " -- Harpoon marker
+                        local filename = vim.fn.fnamemodify(entry, ":p")
+                        local icon = harpoon_set[entry] and marked_icon .. " " or ""
 
                         return {
                             value = entry,
@@ -61,23 +63,32 @@ return {
                 })
             end
 
-            -- Invoke Telescope with the custom finder
             require("telescope.pickers").new({}, {
                 prompt_title = "Find Files",
                 finder = get_finder(),
-                sorter = require("telescope.config").values.generic_sorter({}),
+                sorter = conf.values.generic_sorter({}),
+                previewer = conf.values.file_previewer({}),
                 attach_mappings = function(prompt_bufnr, map)
                     map("i", "<C-a>", function()
                         local state = require("telescope.actions.state")
                         local entry = state.get_selected_entry()
                         local current_picker = state.get_current_picker(prompt_bufnr)
 
+                        local current_row = current_picker:get_selection_row()
+
                         if entry and entry.value then
                             harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
                             vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
 
-                            entry.display = entry.display .. "⭐ "
-                            current_picker:refresh(current_picker.finder, { reset_prompt = false })
+                            entry.display = marked_icon .. " " .. entry.display
+
+                            current_picker:refresh(current_picker.finder, {
+                                reset_prompt = false,
+                            })
+
+                            vim.defer_fn(function()
+                                current_picker:set_selection(current_row)
+                            end, 10)
                         else
                             vim.notify("Invalid file selection", vim.log.levels.ERROR)
                         end
