@@ -80,15 +80,18 @@ return {
                             harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
                             vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
 
-                            entry.display = marked_icon .. " " .. entry.display
+                            -- Check if already marked
+                            if entry.display and string.sub(entry.display, 1, #marked_icon) ~= marked_icon then
+                                entry.display = marked_icon .. " " .. entry.display
 
-                            current_picker:refresh(current_picker.finder, {
-                                reset_prompt = false,
-                            })
+                                current_picker:refresh(current_picker.finder, {
+                                    reset_prompt = false,
+                                })
 
-                            vim.defer_fn(function()
-                                current_picker:set_selection(current_row)
-                            end, 10)
+                                vim.defer_fn(function()
+                                    current_picker:set_selection(current_row)
+                                end, 10)
+                            end
                         else
                             vim.notify("Invalid file selection", vim.log.levels.ERROR)
                         end
