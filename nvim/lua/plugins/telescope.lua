@@ -37,6 +37,37 @@ return {
             },
         })
 
+        local function map_harpoon_item(prompt_bufnr, map)
+            map("i", "<C-a>", function()
+                local state = require("telescope.actions.state")
+                local entry = state.get_selected_entry()
+                local current_picker = state.get_current_picker(prompt_bufnr)
+
+                local current_row = current_picker:get_selection_row()
+
+                if entry and entry.value then
+                    harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
+                    vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
+
+                    -- Check if already marked
+                    if entry.display and string.sub(entry.display, 1, #marked_icon) ~= marked_icon then
+                        entry.display = marked_icon .. " " .. entry.display
+
+                        current_picker:refresh(current_picker.finder, {
+                            reset_prompt = false,
+                        })
+
+                        vim.defer_fn(function()
+                            current_picker:set_selection(current_row)
+                        end, 10)
+                    end
+                else
+                    vim.notify("Invalid file selection", vim.log.levels.ERROR)
+                end
+            end)
+            return true
+        end
+
         local function find_files_with_harpoon()
             local function get_finder()
                 local harpoon_list = harpoon:list()
@@ -68,36 +99,7 @@ return {
                 finder = get_finder(),
                 sorter = conf.values.generic_sorter({}),
                 previewer = conf.values.file_previewer({}),
-                attach_mappings = function(prompt_bufnr, map)
-                    map("i", "<C-a>", function()
-                        local state = require("telescope.actions.state")
-                        local entry = state.get_selected_entry()
-                        local current_picker = state.get_current_picker(prompt_bufnr)
-
-                        local current_row = current_picker:get_selection_row()
-
-                        if entry and entry.value then
-                            harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
-                            vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
-
-                            -- Check if already marked
-                            if entry.display and string.sub(entry.display, 1, #marked_icon) ~= marked_icon then
-                                entry.display = marked_icon .. " " .. entry.display
-
-                                current_picker:refresh(current_picker.finder, {
-                                    reset_prompt = false,
-                                })
-
-                                vim.defer_fn(function()
-                                    current_picker:set_selection(current_row)
-                                end, 10)
-                            end
-                        else
-                            vim.notify("Invalid file selection", vim.log.levels.ERROR)
-                        end
-                    end)
-                    return true
-                end,
+                attach_mappings = map_harpoon_item
             }):find()
         end
 
