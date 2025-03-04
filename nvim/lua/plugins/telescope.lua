@@ -50,6 +50,7 @@ return {
 
         local function map_harpoon_item(prompt_bufnr, map)
             map("i", "<C-a>", function()
+                vim.notify("Adding", vim.log.levels.INFO)
                 local state = require("telescope.actions.state")
                 local entry = state.get_selected_entry()
                 local current_picker = state.get_current_picker(prompt_bufnr)
@@ -60,18 +61,13 @@ return {
                     harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
                     vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
 
-                    -- Check if already marked
-                    if entry.display and string.sub(entry.display, 1, #marked_icon) ~= marked_icon then
-                        entry.display = marked_icon .. " " .. entry.display
+                    current_picker:refresh(current_picker.finder, {
+                        reset_prompt = false,
+                    })
 
-                        current_picker:refresh(current_picker.finder, {
-                            reset_prompt = false,
-                        })
-
-                        vim.defer_fn(function()
-                            current_picker:set_selection(current_row)
-                        end, 10)
-                    end
+                    vim.defer_fn(function()
+                        current_picker:set_selection(current_row)
+                    end, 10)
                 else
                     vim.notify("Invalid file selection", vim.log.levels.ERROR)
                 end
@@ -81,18 +77,19 @@ return {
 
         local function find_files_with_harpoon()
             local function get_finder()
-                local harpoon_set = get_harpoon_items()
-
                 return require("telescope.finders").new_table({
                     --use ripgrep
                     results = vim.fn.systemlist("rg --files"),
                     entry_maker = function(entry)
                         local filename = vim.fn.fnamemodify(entry, ":p")
-                        local icon = harpoon_set[entry] and marked_icon .. " " or ""
 
                         return {
                             value = entry,
-                            display = icon .. entry,
+                            display = function()
+                                local harpoon_set = get_harpoon_items()
+                                local icon = harpoon_set[entry] and (marked_icon .. " ") or ""
+                                return icon .. entry
+                            end,
                             ordinal = entry,
                             path = filename,
                         }
@@ -111,8 +108,6 @@ return {
 
         local function find_grep_with_harpoon()
             local function get_finder()
-                local harpoon_set = get_harpoon_items()
-
                 return require("telescope.finders").new_job(
                     function(prompt)
                         if not prompt or prompt == "" then
@@ -124,11 +119,13 @@ return {
                         local filename, lnum, col, text = entry:match("([^:]+):(%d+):(%d+):(.*)")
                         if not filename then return nil end
 
-                        local icon = harpoon_set[filename] and marked_icon .. " " or ""
-
                         return {
                             value = filename,
-                            display = icon .. filename,
+                            display = function()
+                                local harpoon_set = get_harpoon_items()
+                                local icon = harpoon_set[filename] and (marked_icon .. " ") or ""
+                                return icon .. filename .. ":" .. lnum .. ":" .. col .. " " .. text
+                            end,
                             ordinal = filename .. text,
                             path = filename,
                             lnum = tonumber(lnum),
