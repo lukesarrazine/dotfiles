@@ -58,8 +58,13 @@ return {
                 local current_row = current_picker:get_selection_row()
 
                 if entry and entry.value then
-                    harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
-                    vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
+                    if harpoon:list():get_by_value(entry.value) then
+                        harpoon:list():remove({ value = entry.value, context = { col = 0, row = 1 } })
+                        vim.notify("Removed from Harpoon: " .. entry.value, vim.log.levels.INFO)
+                    else
+                        harpoon:list():add({ value = entry.value, context = { col = 0, row = 1 } })
+                        vim.notify("Added to Harpoon: " .. entry.value, vim.log.levels.INFO)
+                    end
 
                     current_picker:refresh(current_picker.finder, {
                         reset_prompt = false,
