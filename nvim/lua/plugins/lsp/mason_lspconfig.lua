@@ -1,7 +1,9 @@
 return {
-    "williamboman/mason-lspconfig.nvim",
+    "neovim/nvim-lspconfig",
     dependencies = {
-        "neovim/nvim-lspconfig",
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        'saghen/blink.cmp'
     },
     config = function()
         local capabilities = require('blink.cmp').get_lsp_capabilities()
@@ -21,6 +23,25 @@ return {
                             Lua = {
                                 diagnostics = {
                                     globals = { "vim" },
+                                },
+                            },
+                        },
+                    }
+                end,
+                ["svelte"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.svelte.setup {
+                        capabilities = capabilities,
+                        settings = {
+                            svelte = {
+                                plugin = {
+                                    svelte = {
+                                        enable = true,
+                                        -- Enable snippets
+                                        compilerWarnings = {
+                                            ["a11y-missing-content"] = "ignore",
+                                        },
+                                    },
                                 },
                             },
                         },

@@ -1,17 +1,13 @@
 return {
     'saghen/blink.cmp',
+    dependencies = 'rafamadriz/friendly-snippets',
     version = '*',
-    dependencies = {
-        'L3MON4D3/LuaSnip', version = 'v2.*'
-    },
     opts = {
         sources = {
             default = { "lsp", "path", "buffer", "snippets" },
         },
-        snippets = { preset = 'luasnip' },
         keymap = {
             preset = 'none',
-
             ['<Tab>'] = {
                 function(cmp)
                     if cmp.snippet_active() then
@@ -26,6 +22,10 @@ return {
 
             ['<C-k>'] = { 'select_prev', 'fallback' },
             ['<C-j>'] = { 'select_next', 'fallback' },
-        }
-    }
+        },
+        appearance = {
+            use_nvim_cmp_as_default = true,
+            nerd_font_variant = 'mono'
+        },
+    },
 }
