@@ -78,12 +78,17 @@ M.setup = function()
     )
 end
 
+M.setup_default = function()
+    vim.opt.background = "light"
+    vim.cmd("colorscheme " .. "OceanicNext")
+end
+
 return {
     {
         "EdenEast/nightfox.nvim",
         lazy = false,
         priority = colorscheme_priority,
-        config = M.setup, -- Call setup
+        config = M.setup_default, -- Call setup
     },
     {
         "folke/tokyonight.nvim",
