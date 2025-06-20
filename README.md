@@ -9,3 +9,7 @@ Luke's dotfiles repo :)
 # that one tool that converts file types
 # azure cli
 # cargo install sqlx-cli --no-default-features --features postgres,native-tls
+
+
+# Basic psql
+
