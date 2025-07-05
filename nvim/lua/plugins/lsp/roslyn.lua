@@ -88,7 +88,8 @@ function M.setup_razor()
     }
 end
 
-return {
+return
+{
     "seblyng/roslyn.nvim",
     dependencies = {
         {
@@ -105,13 +106,13 @@ return {
     config = function()
         local find_razor_utils = require("util.find_razor_files")
         local root_dir = vim.fn.getcwd()
-        local has_razor_files = find_razor_utils.has_razor_files_cached(root_dir)
+        --local has_razor_files = find_razor_utils.has_razor_files_cached(root_dir)
 
-        if has_razor_files then
-            M.setup_razor()
-        else
-            M.setup_roslyn()
-        end
+        --if has_razor_files then
+            --M.setup_razor()
+        --else
+            --M.setup_roslyn()
+        --end
     end
 }
 

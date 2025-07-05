@@ -1,46 +1,61 @@
-local M = {}
+local M = {
+    current_day_index = 1,
+    day_colorschemes = {
+        "everforest-hard",
+        "everforest-soft",
+        "kanagawa-lotus",
+    },
+
+    current_night_index = 1,
+    night_colorschemes = {
+        "nightfox",
+        "tokyonight-moon",
+        "everforest-hard",
+        "everforest-soft",
+        "bamboo",
+        "kanagawa-dragon",
+        'OceanicNext',
+        'nord',
+        'miasma'
+    },
+
+    special_colorschemes = {
+        ["12-25"] = "everforest", -- Christmas (Dec 25)
+    }
+}
+
 local time_utils = require("util.time")
 local environment_utils = require("util.environments")
-local colorscheme_priority = 1000
 local colorscheme_change_seconds = 1000 * 60 * 60; -- milliseconds * seconds * minutes
 math.randomseed(os.time())                         -- seed randomness
-
-M.day_colorschemes = {
-    "everforest-hard",
-    "everforest-soft",
-    "kanagawa-lotus",
-}
-
-M.night_colorschemes = {
-    "nightfox",
-    "tokyonight-moon",
-    "everforest-hard",
-    "everforest-soft",
-    "bamboo",
-    "kanagawa-dragon",
-    'OceanicNext',
-    'nord',
-    'miasma'
-}
-
-M.special_colorschemes = {
-    ["12-25"] = "everforest", -- Christmas (Dec 25)
-}
 
 M.set_colorscheme = function()
     local is_daytime = time_utils.is_daytime()
     local selected_colorcheme
-    if is_daytime then
-        selected_colorcheme = M.get_random_element(M.day_colorschemes)
-    else
-        selected_colorcheme = M.get_random_element(M.night_colorschemes)
-    end
 
     if is_daytime then
-        vim.opt.background = "light"
+        selected_colorcheme = M.day_colorschemes[M.current_day_index]
+
+        if M.current_day_index == #M.day_colorschemes then
+            M.current_day_index = 1
+        else
+            M.current_day_index = M.current_day_index + 1
+        end
     else
-        vim.opt.background = "dark"
+        selected_colorcheme = M.night_colorschemes[M.current_night_index]
+
+        if M.current_night_index == #M.night_colorschemes then
+            M.current_night_index = 1
+        else
+            M.current_night_index = M.current_night_index + 1
+        end
     end
+
+    --if is_daytime then
+    --   vim.opt.background = "light"
+    --else
+    --   vim.opt.background = "dark"
+    --end
 
     if selected_colorcheme:match("everforest") then
         if selected_colorcheme == "everforest-medium" then
@@ -79,37 +94,32 @@ M.setup = function()
 end
 
 M.setup_default = function()
-    vim.opt.background = "light"
     vim.cmd("colorscheme " .. "OceanicNext")
 end
 
 return {
     {
-        "EdenEast/nightfox.nvim",
+        -- Default colorscheme
+        "mhartington/oceanic-next",
         lazy = false,
-        priority = colorscheme_priority,
+        priority = 1000,
         config = M.setup_default, -- Call setup
     },
     {
+        "EdenEast/nightfox.nvim",
+        event = "VeryLazy",
+    },
+    {
         "folke/tokyonight.nvim",
-        lazy = false,
-        priority = 1000,
+        event = "VeryLazy",
         opts = {},
     },
     {
         "shaunsingh/nord.nvim",
-        lazy = false,
-        priority = 1000,
-    },
-    {
-        "mhartington/oceanic-next",
-        lazy = false,
-        priority = 1000,
     },
     {
         "navarasu/onedark.nvim",
-        lazy = false,
-        priority = 1000,
+        event = "VeryLazy",
         config = function()
             require('onedark').setup {
                 style = "darker",
@@ -119,29 +129,25 @@ return {
     },
     {
         "ribru17/bamboo.nvim",
-        lazy = false,
-        priority = colorscheme_priority,
+        event = "VeryLazy",
         config = function()
             require("bamboo").setup({})
         end,
     },
     {
         "sainnhe/everforest",
-        lazy = false,
-        priority = colorscheme_priority,
+        event = "VeryLazy",
         config = function()
             vim.g.everforest_enable_italic = false
         end,
     },
     {
         "xero/miasma.nvim",
-        lazy = false,
-        priority = 1000,
+        event = "VeryLazy",
     },
     {
         "rebelot/kanagawa.nvim",
-        priority = colorscheme_priority,
-        lazy = false,
+        event = "VeryLazy",
         config = function()
             require("kanagawa")
         end
