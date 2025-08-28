@@ -6,6 +6,8 @@ local ensure_installed = {
     "html"
 }
 
+local cargo_target_directory = "target/ra";
+
 return {
     "mason-org/mason-lspconfig.nvim",
     event = "VeryLazy",
@@ -28,6 +30,19 @@ return {
                     diagnostics = {
                         globals = { "vim" },
                     },
+                },
+            },
+        })
+
+        -- Additional config rust_analyzer
+        vim.lsp.config("rust_analyzer", {
+            settings = {
+                cargo = {
+                    -- separate dir for
+                    extraEnv = { CARGO_TARGET_DIR = cargo_target_directory },
+                },
+                checkOnSave = {
+                    extraArgs = { "--target-dir", cargo_target_directory },
                 },
             },
         })
