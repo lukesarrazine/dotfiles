@@ -5,8 +5,6 @@ return {
         "ThePrimeagen/harpoon",
     },
     config = function()
-        require("ext-dependencies.ripgrep").ensure_ripgrep()
-
         local telescope = require("telescope")
         local conf = require("telescope.config")
         local builtin = require("telescope.builtin")
