@@ -3,6 +3,7 @@ echo "init symlinks"
 ln -sf ~/dotfiles/nvim ~/.config/nvim
 ln -sf ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -s ~/dotfiles/.zshrc ~/.zshrc
+ln -s ~/dotfiles/.bashrc ~/.bashrc
 echo "symlinks completed"
 
 echo "init tpm"
